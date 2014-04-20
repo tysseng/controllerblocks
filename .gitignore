@@ -1,0 +1,17 @@
+*.asm
+*.ini
+*.cp
+*.mcl
+*.dbg
+*.dlt
+*.hex
+*.log
+*.lst
+*.mcl
+*callertable.txt
+*.mcl
+*.bmk
+*.brk
+*.dct
+*.user.dic
+*.wch
