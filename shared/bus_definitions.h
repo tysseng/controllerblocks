@@ -1,9 +1,9 @@
 //bus ports
-#define ADDRESS_BUS PORTC
-#define ADDRESS_BUS_DIRECTION TRISC
+#define ADDRESS_BUS PORTD
+#define ADDRESS_BUS_DIRECTION TRISD
 
-#define DATA_BUS PORTC
-#define DATA_BUS_DIRECTION TRISC
+#define DATA_BUS PORTD
+#define DATA_BUS_DIRECTION TRISD
 // set this when using a shared address/data bus. Address bus occupies the 
 // lower n bits, data bus the rest. Data bus bits are shifted down this many
 // steps.
@@ -12,8 +12,8 @@
 #define LCD_DATA_PORT PORTB
 #define LCD_DATA_DIRECTION TRISB
 
-#define LCD_CTRL_PORT PORTC
-#define LCD_CTRL_DIRECTION TRISC
+#define LCD_CTRL_PORT PORTD
+#define LCD_CTRL_DIRECTION TRISD
 
 //bus control
 #define SEL_DATA_IN 0     //enable tristate buffers and disable LED output

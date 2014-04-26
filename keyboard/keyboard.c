@@ -25,7 +25,7 @@
  *          ---      |            ---      |
  *           |       |             |       |
  * ROW 1 ____|_______|_____________|_______|________________
- *          conn     | cross      conn     | cross
+ *        connect    | cross    connect    | cross
  *                   |                     |
  *                   |                     |
  *            _______| connect      _______| connect
@@ -36,7 +36,7 @@
  *          ---      |            ---      |
  *           |       |             |       |
  * ROW 2 ____|_______|_____________|_______|________________
- *          conn     | cross      conn     | cross
+ *        connect    | cross    connect    | cross
  *                   |                     |
  *                   |                     |
  *

@@ -6,7 +6,7 @@ Value=-1
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=keyboard\keyboard.c
+Value=ControllerBlocks.c
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -16,18 +16,20 @@ Value=2000
 [EEPROM_DEFINITION]
 Value=
 [FILES]
-Count=4
+Count=6
 File0=command_handler.c
 File1=keyboard\keyboard.c
 File2=ControllerBlocks.c
 File3=shared\io.c
+File4=midi\midi.c
+File5=shared\global.c
 [BINARIES]
 Count=0
 [IMAGES]
 Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
-Count=8
+Count=15
 File0=ControllerBlocks.c
 File1=keyboard\keyboard.c
 File2=command_handler.h
@@ -36,6 +38,13 @@ File4=command_handler.c
 File5=keyboard\keyboard.h
 File6=shared\io.c
 File7=shared\io.h
+File8=midi\midi.c
+File9=midi\midi.h
+File10=..\mikroc\so909_pro\controller\controller.c
+File11=shared\global.c
+File12=shared\global.h
+File13=shared\definitions.h
+File14=..\..\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\defs\P18F458.c
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -43,29 +52,35 @@ Count=0
 [OTHER_FILES]
 Count=0
 [SEARCH_PATH]
-Count=5
+Count=6
 Path0=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\defs\
 Path1=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\uses\P18\
 Path2=C:\git\controllerblocks\
 Path3=C:\git\controllerblocks\keyboard\
 Path4=C:\git\controllerblocks\shared\
+Path5=C:\git\controllerblocks\midi\
 [HEADER_PATH]
-Count=3
+Count=4
 Path0=C:\git\controllerblocks\
 Path1=C:\git\controllerblocks\keyboard\
 Path2=C:\git\controllerblocks\shared\
+Path3=C:\git\controllerblocks\midi\
 [HEADERS]
-Count=6
+Count=9
 File0=command_handler.h
 File1=keyboard\keyboard.h
 File2=keyboard\keyboard_private.h
 File3=shared\bus_definitions.h
 File4=shared\key_consts.h
 File5=shared\io.h
+File6=midi\midi.h
+File7=shared\definitions.h
+File8=shared\global.h
 [PLDS]
 Count=0
 [Useses]
-Count=0
+Count=1
+File0=UART
 [EXPANDED NODES]
 Node1=Sources
 Node2=Header Files
