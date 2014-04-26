@@ -102,3 +102,29 @@ void main() {
     row = (row + 1) % ROWCOUNT;
   }
 }
+
+
+/***
+The big todo/todecide:
+- Setup
+  - Via 'config' button and send midi/touch controller to pair
+  - Via menu / sysex
+    - Set default value
+    - Set running status on/off
+- Analog input
+- Rotary encoder input
+- running status - allow, make configurable?
+- sysex send, inc 14 bit controllers?
+- support pitch bend? How?
+- LCD display
+
+**/
+
+/**
+Ideas:
+- Instead of a 4 x 4 grid where spaces may be left open, only connect
+  rows vertically (+ current column) and columns horizontaly (+ current row).
+  This makes it possible to use less connectors for a bigger grid. Optionally:
+  Use a two row header on the sides, can be connected if one wants to connect
+  both rows and cols to the first block.
+**/

@@ -78,25 +78,45 @@ void MIDI_IRQ_handleSysexData(char sysexData){
 }
 
 /**
+ * Send any kind of "normal" midi message, i.e. all messages except sysex
+ * and pitch bend.
+ * - controller is either the controller or the note to send. It is ignored for
+ *   one and zero byte data messages.
+ * - value is the velocity or controller value, usually the value read from the
+ *   input block.
+ **/
+void MIDI_sendMidiMessage( unsigned short channel, unsigned short status, unsigned short controller, unsigned short value){
+
+  //Status messages in the F-range are global (no channel)
+  if(status < 0xF0){
+    UART1_Write(status + channel);
+  } else {
+    UART1_Write(status);
+  }
+
+  //Channel pressure (0xDn) and Program change (0xCn) only use one data byte
+  if(status < 0xC0){
+    UART1_Write(controller);
+  }
+
+  //Status messages in the F-range have no data bytes
+  if(status < 0xF0) {
+    UART1_Write(value);
+  }
+}
+
+/**
  * Send a single midi 'note on'
  **/
 void MIDI_sendNoteOn( unsigned short channel, unsigned short note, unsigned short velocity ) {
-  UART1_Write(0x90 + channel);
-  UART1_Write(note);
-  UART1_Write(velocity);
+  MIDI_sendMidiMessage( channel, 0x90, note, velocity);
 }
 
 /**
  * Send a single midi 'note off'
  **/
 void MIDI_sendNoteOff( unsigned short channel, unsigned short note, unsigned short velocity ) {
-  UART1_Write(0x80 + channel);
-  UART1_Write(note);
-  UART1_Write(velocity);
-}
-
-void MIDI_sendAllOff(){
-  UART1_Write(0x7B);
+  MIDI_sendMidiMessage( channel, 0x90, note, velocity);
 }
 
 void MIDI_sendSysexStart(){
