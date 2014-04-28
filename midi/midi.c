@@ -4,77 +4,129 @@
 
 int MIDI_byteCounter;
 char MIDI_lastStatus;
+char MIDI_lastData1;
+char MIDI_lastData2;
+char MIDI_inSysexMode;
+char MIDI_sysexForThisDevice;
+char MIDI_sysexAddress[3];
 char MIDI_sysexBuffer[256];
+char MIDI_sysexByteCounter;
+char MIDI_routing;
 
+char MIDI_settings[8];
 
 /**
  * Init usart and midi settings
  **/
 void MIDI_init(){
   UART1_Init(31250);
-  G_MIDI_isSysexAddressCorrect = 0;
-  G_MIDI_shouldFlushSysexBuffer = 0;
+  MIDI_settings[MIDI_SETTING_LISTEN_ALL_CHANNELS] = 0;
+  MIDI_settings[MIDI_SETTING_CHANNEL] = 0;
 }
 
 /**
- * Handle a midi status byte received in the interrupt routine
+ * Handle a single midi byte.
  **/
-void MIDI_IRQ_handleMidiStatusByte(char midiStatus){
-  MIDI_lastStatus = midiStatus;
-  MIDI_byteCounter = 0;
+void MIDI_handleMidiByte(char midiByte){
 
-  switch(midiStatus){
-  //Add cases as needed.
-  case MIDI_STATUS_MIDI_CLOCK:
-    //Do stuff here
-    break;
-  }
-}
+  if(midiByte.F7 == 1){ //status byte
+    PORTE.F0 = ~PORTE.F0;
+    // check that message is for this device
+    // TODO: Move to buffer-populator if a buffer is used.
+    if(!(
+         MIDI_settings[MIDI_SETTING_LISTEN_ALL_CHANNELS] ||
+         midiByte >= 0xF0 ||                         //statuses above 0xF0 (sysex) affects all channels.
+         (midiByte & MIDI_MASK_CHANNEL) == MIDI_settings[MIDI_SETTING_CHANNEL]) // message is for the currently chosen channel
+      ){
+      MIDI_routing = MIDI_ROUTING_IGNORE;
+      return;
+    } 
+    
+    MIDI_routing = MIDI_ROUTING_HANDLE;
+    MIDI_lastStatus = midiByte < 0xF0 ? (midiByte & MIDI_MASK_STATUS) : midiByte; //stip address from status byte if present.
+    MIDI_byteCounter = 1;
 
-/**
- * Handle a midi data byte received in interrupt routine
- **/
-void MIDI_IRQ_handleMidiDataByte(char midiData){
-  MIDI_byteCounter++;
-
-  if(MIDI_lastStatus == MIDI_STATUS_SYSEX_START){
-    MIDI_IRQ_handleSysexData(midiData);
-  }
-}
-
-/**
- * data import from PC using sysex. NB: NOT IMPLEMENTED
- **/
-void MIDI_IRQ_handleSysexData(char sysexData){
-  switch(MIDI_byteCounter){
-  case 1:
-    G_MIDI_shouldFlushSysexBuffer = 0;
-    if(sysexData == 0){
-      G_MIDI_isSysexAddressCorrect = 1;
+    // Handle sysex status messages.
+    if(midiByte == MIDI_STATUS_SYSEX_START){
+      MIDI_sysexByteCounter = 0;
+      MIDI_inSysexMode = 1;
+      MIDI_sysexForThisDevice = 1; //will be set to false if address check fails later.
+    } else if(midiByte == MIDI_STATUS_SYSEX_END){
+      // TODO: Do something with sysex bytes? Can also be done during treatSysexByte.
+      MIDI_inSysexMode = 0;
     } else {
-      G_MIDI_isSysexAddressCorrect = 0;
+      //sysex aborted if in sysex mode
+      MIDI_inSysexMode = 0;
     }
-    break;
-  case 2:
-    if(sysexData != G_MIDI_sysexIdByte1){
-      G_MIDI_isSysexAddressCorrect = 0;
+    
+    //TODO: Handle other one-byte midi messages.
+    
+  } else { // data byte
+    if(MIDI_routing != MIDI_ROUTING_HANDLE){
+      return;
     }
-    break;
-  case 3:
-    if(sysexData != G_MIDI_sysexIdByte2){
-      G_MIDI_isSysexAddressCorrect = 0;
+
+    if(MIDI_inSysexMode){
+      // check if sysex is meant for this device (Three byte address). This check will
+      // run for all the three first sysex data bytes.
+      if(MIDI_sysexByteCounter < 3){
+        if(!MIDI_sysexAddress[MIDI_sysexByteCounter]){ //TODO: I can't remember how sysexAddress is populated.
+          MIDI_sysexForThisDevice = 0;
+        }
+      } else {
+        if(MIDI_sysexForThisDevice){
+          MIDI_handleSysexByte(midiByte);
+        }
+      }
+      MIDI_sysexByteCounter++;
+    } else {
+      //Store last received first-parameter. switch to 1 after second param to allow for running status
+      //TODO: Add support for 1-data byte parameters ("Program change" and "Channel pressure")
+      if(MIDI_byteCounter == 1){ // first parameter received
+        MIDI_lastData1 = midiByte;
+        MIDI_byteCounter = 2;
+        //TODO: Trigger action if status only requires one data byte
+      } else if(MIDI_byteCounter == 2){ // second parameter received
+        MIDI_lastData2 = midiByte;
+        MIDI_handleMidiMessage(); // a complete 3 byte message has been received, now go do something with it.
+        MIDI_byteCounter = 1;
+      }
     }
-    if(G_MIDI_isSysexAddressCorrect){
-      //EEX_importMemoryFromMidiStart();
+  }
+}
+
+//TODO: Code copied from MPG-200, reimplement for ControllerBlocks
+void MIDI_handleSysexByte(char midiByte){
+  /*
+  if(sysexDataCounter == 0){
+    //first data byte, signals type of operation
+    currentSysexOperation = midiByte;
+    if(midiByte == SYSEX_OP_WRITE_SETTINGS_TO_EE){
+      writeSettingsToEE();
+    } else if(midiByte == SYSEX_OP_CLEAR_SETTINGS_FROM_EE){
+      clearSettingsFromEE();
+    } else if(midiByte == SYSEX_OP_CHANGE_SETTING){
+      //do nothing, need more data before we can change settings.
+      sysexDataCounter++;
     }
-    break;
-  default:
-    MIDI_sysexBuffer[MIDI_byteCounter-4] = sysexData;
-    if(MIDI_byteCounter - 4 == 255){
-      G_MIDI_shouldFlushSysexBuffer = 1;
-      MIDI_byteCounter = 3;
+  } else if(sysexDataCounter == 1){
+    if(currentSysexOperation == SYSEX_OP_CHANGE_SETTING){
+      // read position in settings array to change
+      currentSysexParam1 = midiByte;
     }
- }
+    sysexDataCounter++;
+  } else if(sysexDataCounter == 2){
+    if(currentSysexOperation == SYSEX_OP_CHANGE_SETTING){
+      // change settings value at position indicated by previous sysex parameter.
+      settings[currentSysexParam1] = midiByte;
+    }
+    sysexDataCounter++;
+  }*/
+}
+
+void MIDI_handleMidiMessage(){
+  PORTB = MIDI_lastData1;
+  //Do something, light up a led or whatnot.
 }
 
 /**

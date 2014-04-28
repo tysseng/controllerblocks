@@ -6,7 +6,7 @@ Value=-1
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=command_handler.c
+Value=midi\midi.c
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -29,7 +29,7 @@ Count=0
 Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
-Count=15
+Count=16
 File0=ControllerBlocks.c
 File1=keyboard\keyboard.c
 File2=command_handler.h
@@ -45,6 +45,7 @@ File11=shared\global.c
 File12=shared\global.h
 File13=shared\definitions.h
 File14=..\..\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\defs\P18F458.c
+File15=..\mikroc\mpg200\mpg200.c
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
