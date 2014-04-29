@@ -6,7 +6,7 @@ Value=-1
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=midi\midi.c
+Value=shared\global.h
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -29,7 +29,7 @@ Count=0
 Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
-Count=16
+Count=17
 File0=ControllerBlocks.c
 File1=keyboard\keyboard.c
 File2=command_handler.h
@@ -40,12 +40,13 @@ File6=shared\io.c
 File7=shared\io.h
 File8=midi\midi.c
 File9=midi\midi.h
-File10=..\mikroc\so909_pro\controller\controller.c
-File11=shared\global.c
-File12=shared\global.h
-File13=shared\definitions.h
-File14=..\..\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\defs\P18F458.c
-File15=..\mikroc\mpg200\mpg200.c
+File10=shared\global.c
+File11=shared\definitions.h
+File12=..\..\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\defs\P18F458.c
+File13=..\mikroc\mpg200\mpg200.c
+File14=keyboard\keyboard_private.h
+File15=shared\io_private.h
+File16=command_handler_private.h
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

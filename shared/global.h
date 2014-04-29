@@ -1,10 +1,9 @@
 #ifndef _GLOBAL_H
 #define _GLOBAL_H
 
-#define G_MIDI_isSysexAddressCorrect GLOBAL_statusBits1.F0
-#define G_MIDI_shouldFlushSysexBuffer GLOBAL_statusBits1.F1
+#define MODE_PLAY 0
+#define MODE_LEARN 1
 
-extern char GLOBAL_statusBits1;
-extern char G_MIDI_sysexIdByte1;
-extern char G_MIDI_sysexIdByte2;
+extern char GLOBAL_mode;
+
 #endif

@@ -43,7 +43,7 @@
  **/
 
 // mapping between rows/columns and key numbers
-unsigned short keymap[ROWCOUNT * COLCOUNT];
+unsigned short keymap[(MATRIXROWS +1) * MATRIXCOLS];
 
 // variables for detecting button changes.
 unsigned short previousState[11];
@@ -56,12 +56,14 @@ void KBD_init(){
   unsigned short row;
   
   // Read initial keyboard states
-  for(row = 0; row < ROWCOUNT; row++){
+  for(row = 0; row < MATRIXROWS; row++){
     IO_setAddressLineLow(row);
     delay_ms(1);
     currentState[row] = IO_readData();
     previousState[row] = currentState[row];
   }
+  currentState[SYSTEM_ROW] = 0xFF;
+  previousState[SYSTEM_ROW] = 0xFF;
 
   KEYMAP_init(keymap);
 }
@@ -70,12 +72,20 @@ void KBD_init(){
  * Read all keys on the current row and raise any key pressed/released events
  **/
 void KBD_read(unsigned short row){
-
-  //read the keyboard
   IO_setAddressLineLow(row);
   delay_us(200);
-  currentState[row] = IO_readData();
+  KBD_triggerKeyEventsAndUpdateState(row, IO_readData());
+}
 
+/**
+ * Read system specific keys (not part of the normal matrix, this may change later).
+ **/
+void KBD_readSystemButtons(){
+  KBD_triggerKeyEventsAndUpdateState(SYSTEM_ROW, IO_readSystemButtons());
+}
+
+void KBD_triggerKeyEventsAndUpdateState(unsigned short row, unsigned short states){
+  currentState[row] = states;
   //check if a button is pressed or released.
   if( currentState[row] != previousState[row]) {
     KBD_generateEvents( row, ~currentState[row] & previousState[row], KEYDIR_DOWN ); //press
@@ -95,18 +105,22 @@ void KBD_generateEvents( unsigned short row, unsigned short states, unsigned sho
   unsigned short keyCode;
 
   //loop through all column bits.
-  for( col=0; col < COLCOUNT; col++){
+  for( col=0; col < MATRIXCOLS; col++){
     keyPressed = states & (1<<col);
 
     if( keyPressed ) {
-      keyCode = keymap[row*COLCOUNT+col]; //lookup ID of key pressed.
-      CMD_keyEventDispatcher(keyCode, keydirection);
+      if(row == SYSTEM_ROW){
+        CMD_systemKeyEventDispatcher(col, keydirection);
+      } else {
+        keyCode = keymap[row*MATRIXCOLS+col]; //lookup ID of key pressed.
+        CMD_keyEventDispatcher(keyCode, keydirection);
+      }
     }
   }
 }
 
 /**
- * map column/row to key number. indexes are [row * COLCOUNT + column]
+ * map column/row to key number. indexes are [row * MATRIXCOLS + column]
  **/
 void KEYMAP_init(unsigned short keymap[]){
   unsigned short row;
@@ -116,8 +130,8 @@ void KEYMAP_init(unsigned short keymap[]){
   // keymap is not in use but may be implemented to disconnect key scanning
   // from key codes.
   index = 0;
-  for(row = 0; row < ROWCOUNT; row++){
-    for(col = 0; col < COLCOUNT; col++){
+  for(row = 0; row < MATRIXROWS; row++){
+    for(col = 0; col < MATRIXCOLS; col++){
       keymap[index] = index;
       index++;
     }

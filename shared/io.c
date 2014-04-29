@@ -1,4 +1,5 @@
 #include "bus_definitions.h"
+#include "io_private.h"
 
 void IO_init(){
   //shared data and address bus
@@ -10,6 +11,7 @@ void IO_init(){
   DATA_BUS_DIRECTION.F5 = DATA_IN;
   DATA_BUS_DIRECTION.F6 = DATA_IN;
   DATA_BUS_DIRECTION.F7 = DATA_IN;
+  SYSTEM_BUTTON_DIRECTION = DATA_IN;
 }
 
 void IO_setAddressLineLow(unsigned short line){
@@ -18,4 +20,8 @@ void IO_setAddressLineLow(unsigned short line){
 
 unsigned short IO_readData(){
   return DATA_BUS >> DATA_BUS_SHIFT;
+}
+
+unsigned short IO_readSystemButtons(){
+  return SYSTEM_BUTTON_PORT & SYSTEM_BUTTON_MASK;
 }

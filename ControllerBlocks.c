@@ -6,16 +6,33 @@
 #include "shared/global.h"
 #include "shared/definitions.h"
 
+/**
+Instructions:
+
+LEARN
+-----
+To learn midi commands, press RB0. RE0 will light up and the controller is ready
+to receive midi messages. Send the desired midi message, then press the key you
+want to send that message. RE0 should turn off for half a second and then back
+on again. Once RE0 is on again, repeat the process for each desired key. Should 
+you want to bind another controller key to the same midi message, you'll have to
+send the same midi message again.
+
+When you have finished learning all keys, press RB0 again to switch off learning 
+mode.
+
+NB: Remember that a piano key will also send a note off. The midi message bound
+to the corresponding controller key is the LAST midi message received before
+the key was pressed. To learn a note on, press AND HOLD the piano key while
+pressing the desired controller key.
+**/
+
 void interrupt() {
   if (PIR1.RCIF) {
     // MIDI input
     MIDI_handleMidiByte(RCREG);
   }
 }
-
-
-
-
 
 /**
  * Set special registers necessary for proper operation
@@ -35,10 +52,14 @@ void MCU_init(){
   
   LCD_DATA_DIRECTION = DATA_OUT;
   
-  TRISE.F0 = DATA_OUT; //debug led 1
-  TRISE.F1 = DATA_OUT; //debug led 2
-  PORTE.F0 = 1;
-  PORTE.F1 = 1;
+  TRISE.F1 = DATA_OUT; //debug led
+  PORTE.F1 = 0;
+  
+  TRISC = DATA_OUT;
+  
+  SYSTEM_LED_LEARN_DIRECTION = DATA_OUT;
+  SYSTEM_LED_LEARN = 0;
+
 }
 
 void main() {
@@ -50,12 +71,15 @@ void main() {
   KBD_init();
   CMD_init();
 
-//  CMD_outputHandler = MIDI_outputHandler;
+  GLOBAL_mode = MODE_PLAY;
 
   row = 0;
   while(1){
+    if(row == 0){
+      KBD_readSystemButtons();
+    }
     KBD_read(row);
-    row = (row + 1) % ROWCOUNT;
+    row = (row + 1) % MATRIXROWS;
   }
 }
 
@@ -72,6 +96,7 @@ The big todo/todecide:
 - running status - allow, make configurable?
 - sysex send, inc 14 bit controllers?
 - support pitch bend? How?
+- support coarse/fine (14 bit) controllers?
 - LCD display
 
 **/
@@ -83,6 +108,7 @@ Ideas:
   This makes it possible to use less connectors for a bigger grid. Optionally:
   Use a two row header on the sides, can be connected if one wants to connect
   both rows and cols to the first block.
+- Enable mapping of key up-events to different message? What value to use?
 **/
 
 /**

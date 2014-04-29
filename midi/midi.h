@@ -27,8 +27,11 @@
 #define MIDI_ROUTING_HANDLE 1
 
 extern int MIDI_byteCounter;
+extern char MIDI_lastChannel;
 extern char MIDI_lastStatus;
-extern char MIDI_sysexBuffer[256];
+extern char MIDI_lastData1;
+extern char MIDI_lastData2;
+extern char MIDI_messageReady;
 
 void MIDI_init();
 

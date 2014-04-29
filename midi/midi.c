@@ -3,6 +3,7 @@
 //#include "../shared/asm_usart.h"
 
 int MIDI_byteCounter;
+char MIDI_lastChannel;
 char MIDI_lastStatus;
 char MIDI_lastData1;
 char MIDI_lastData2;
@@ -12,6 +13,7 @@ char MIDI_sysexAddress[3];
 char MIDI_sysexBuffer[256];
 char MIDI_sysexByteCounter;
 char MIDI_routing;
+char MIDI_messageReady; // 1 if a complete message has been received.
 
 char MIDI_settings[8];
 
@@ -29,21 +31,26 @@ void MIDI_init(){
  **/
 void MIDI_handleMidiByte(char midiByte){
 
+  char channel;
+
   if(midiByte.F7 == 1){ //status byte
-    PORTE.F0 = ~PORTE.F0;
+    channel = midiByte & MIDI_MASK_CHANNEL;
+    
     // check that message is for this device
     // TODO: Move to buffer-populator if a buffer is used.
     if(!(
          MIDI_settings[MIDI_SETTING_LISTEN_ALL_CHANNELS] ||
          midiByte >= 0xF0 ||                         //statuses above 0xF0 (sysex) affects all channels.
-         (midiByte & MIDI_MASK_CHANNEL) == MIDI_settings[MIDI_SETTING_CHANNEL]) // message is for the currently chosen channel
+         channel == MIDI_settings[MIDI_SETTING_CHANNEL]) // message is for the currently chosen channel
       ){
       MIDI_routing = MIDI_ROUTING_IGNORE;
       return;
     } 
-    
+
+    MIDI_messageReady = 0;
     MIDI_routing = MIDI_ROUTING_HANDLE;
     MIDI_lastStatus = midiByte < 0xF0 ? (midiByte & MIDI_MASK_STATUS) : midiByte; //stip address from status byte if present.
+    MIDI_lastChannel = channel;
     MIDI_byteCounter = 1;
 
     // Handle sysex status messages.
@@ -85,11 +92,13 @@ void MIDI_handleMidiByte(char midiByte){
       if(MIDI_byteCounter == 1){ // first parameter received
         MIDI_lastData1 = midiByte;
         MIDI_byteCounter = 2;
-        //TODO: Trigger action if status only requires one data byte
+        //TODO: Trigger action/don't reset if status only requires one data byte
+        MIDI_messageReady = 0; // reset to allow for running status.
       } else if(MIDI_byteCounter == 2){ // second parameter received
         MIDI_lastData2 = midiByte;
         MIDI_handleMidiMessage(); // a complete 3 byte message has been received, now go do something with it.
         MIDI_byteCounter = 1;
+        MIDI_messageReady = 1;
       }
     }
   }
@@ -125,7 +134,6 @@ void MIDI_handleSysexByte(char midiByte){
 }
 
 void MIDI_handleMidiMessage(){
-  PORTB = MIDI_lastData1;
   //Do something, light up a led or whatnot.
 }
 

@@ -9,11 +9,15 @@
 // steps.
 #define DATA_BUS_SHIFT 4
 
-#define LCD_DATA_PORT PORTB
-#define LCD_DATA_DIRECTION TRISB
+#define SYSTEM_BUTTON_PORT PORTB
+#define SYSTEM_BUTTON_DIRECTION TRISB
+#define SYSTEM_LED_LEARN PORTE.F0
+#define SYSTEM_LED_LEARN_DIRECTION TRISE.F0
 
-#define LCD_CTRL_PORT PORTD
-#define LCD_CTRL_DIRECTION TRISD
+#define LCD_DATA_PORT PORTA
+#define LCD_DATA_DIRECTION TRISA
+
+
 
 //bus control
 #define SEL_DATA_IN 0     //enable tristate buffers and disable LED output
