@@ -109,6 +109,11 @@ Ideas:
   Use a two row header on the sides, can be connected if one wants to connect
   both rows and cols to the first block.
 - Enable mapping of key up-events to different message? What value to use?
+- Four x four grid only, but with built in serial? And posibility to use a cable 
+  to connect more? Can connect three matrices from one controller directly,
+  then even more through serial
+- Or only four x four grid, with controller connected through serial? Makes it
+  possible to make smaller blocks
 **/
 
 /**

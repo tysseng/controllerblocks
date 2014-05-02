@@ -9,9 +9,9 @@
 /**
  * Keyboard functions
  * ------------------
- * All keys are normally high. When a key is short circuited to ground, it is
- * read as a key down. When the key is returned to high, it is read as a key
- * up.
+ * All keys are normally high, pulled to +5V by a 10k resistor. When a key is 
+ * short circuited to ground, it is  read as a key down. When the key is 
+ * returned to high, it is read as a key up.
  *
  * Here's how the keyboard scanning algorithm expects the grid to be connected:
  *
@@ -40,6 +40,9 @@
  *                   |                     |
  *                   |                     |
  *
+ *
+ * Rows are scanned, columns are read, so all columns for a row are read as
+ * one byte. Columns are pulled high by a 10k resistor.
  **/
 
 // mapping between rows/columns and key numbers
