@@ -14,11 +14,6 @@
 #define SYSTEM_LED_LEARN PORTE.F0
 #define SYSTEM_LED_LEARN_DIRECTION TRISE.F0
 
-#define LCD_DATA_PORT PORTA
-#define LCD_DATA_DIRECTION TRISA
-
-
-
 //bus control
 #define SEL_DATA_IN 0     //enable tristate buffers and disable LED output
 #define SEL_DATA_OUT 0x30 //disable tristate buffers and enable LED output

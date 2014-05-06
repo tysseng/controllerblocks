@@ -1,5 +1,8 @@
+#include "keyboard.h"
 #include "bus_definitions.h"
 #include "io_private.h"
+#include "io.h"
+
 
 void IO_init(){
   //shared data and address bus
@@ -18,9 +21,18 @@ void IO_setAddressLineLow(unsigned short line){
   ADDRESS_BUS = 0x0F ^ (1 << line);
 }
 
+void IO_setAddressLineHigh(unsigned short line){
+  ADDRESS_BUS = 1 << line;
+}
+
 unsigned short IO_readData(){
   return DATA_BUS >> DATA_BUS_SHIFT;
 }
+
+unsigned int IO_readAnalogData(unsigned short col){
+  return ADC_Read(col);
+}
+
 
 unsigned short IO_readSystemButtons(){
   return SYSTEM_BUTTON_PORT & SYSTEM_BUTTON_MASK;

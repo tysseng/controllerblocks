@@ -20,6 +20,28 @@ void CMD_init(){
   }
 }
 
+/**
+ * value should be between 0 and 127
+ */
+void CMD_generalEventDispatcher(char key, unsigned short value){
+
+  MIDI_sendMidiMessage(
+    midiChannelMap[key],
+    midiStatusMap[key],
+    midiControllerMap[key],
+    value
+  );
+  
+  delay_ms(10);
+  MIDI_sendMidiMessage(
+    midiChannelMap[key],
+    midiStatusMap[key],
+    midiControllerMap[key],
+    0
+  );
+  
+}
+
 void CMD_keyEventDispatcher(char key, unsigned short keydirection){
 
   // Todo: reintroduce key repeat if necessary
@@ -32,7 +54,6 @@ void CMD_keyEventDispatcher(char key, unsigned short keydirection){
 }
 
 void CMD_dispatchKeyDown(char key){
-  LCD_DATA_PORT = key;
   if(GLOBAL_mode == MODE_LEARN){
     if(MIDI_messageReady){
       midiChannelMap[key] = MIDI_lastChannel;

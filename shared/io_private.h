@@ -1,5 +1,5 @@
-#ifndef _KEYBOARD_H
-#define _KEYBOARD_H
+#ifndef _IO_PRIVATE_H
+#define _IO_PRIVATE_H
 
 #define SYSTEM_BUTTON_MASK 0xFF;
 

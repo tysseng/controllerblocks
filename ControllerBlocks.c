@@ -1,4 +1,5 @@
 #include "keyboard/keyboard.h"
+#include "analog/analog.h"
 #include "midi/midi.h"
 #include "command_handler.h"
 #include "shared/bus_definitions.h"
@@ -39,50 +40,44 @@ void interrupt() {
  **/
 void MCU_init(){
 
-  //Necessary to access individual bits on ports
-  ADCON0 = 0; // turn off A/D converter
-  CMCON |= 0x07; //turn off comparators
-  ADCON1 = 0x07; //turn off analogue inputs (for P18F458)
+  TRISC  = DATA_OUT;                 // PORTC is output
 
   //enable interrupts. NB: PEIE/GIE also affects timer0/1
   PEIE_bit = 1;  //TODO: Check if necessary
   GIE_bit = 1;   //TODO: Check if necessary
   RCIE_bit = 1;  // enable USART RX interrupt
 
-  
-  LCD_DATA_DIRECTION = DATA_OUT;
-  
   TRISE.F1 = DATA_OUT; //debug led
   PORTE.F1 = 0;
   
-  TRISC = DATA_OUT;
-  
   SYSTEM_LED_LEARN_DIRECTION = DATA_OUT;
   SYSTEM_LED_LEARN = 0;
-
 }
 
 void main() {
+
   unsigned short row = 0;
   
   MCU_init();
   IO_init();
   MIDI_init();
-  KBD_init();
+//  KBD_init();
   CMD_init();
-
+  ANALOG_init();
+  
   GLOBAL_mode = MODE_PLAY;
 
   row = 0;
   while(1){
+    /*
     if(row == 0){
       KBD_readSystemButtons();
-    }
-    KBD_read(row);
+    }*/
+    //KBD_read(row);
+    ANALOG_read(row);
     row = (row + 1) % MATRIXROWS;
   }
 }
-
 
 /***
 The big todo/todecide:
@@ -91,13 +86,22 @@ The big todo/todecide:
   - Via menu / sysex
     - Set default value
     - Set running status on/off
+  - On config: Try to detect if this is a button or a potentiometer. Blink
+    the button or pot led to show what was detected. Let the user change this
+    with a toggle mode button, step to next type and blink that led.
 - Analog input
+  - debouncing - +/- 2-3 is not a change
+  - unused inputs will be pulled to ground so probably no need to do anything
+    to them.
+  - detect if input is pot or button - when learning, measure several times,
+    if little change -> button, if lots of change: pot.
 - Rotary encoder input
 - running status - allow, make configurable?
 - sysex send, inc 14 bit controllers?
 - support pitch bend? How?
 - support coarse/fine (14 bit) controllers?
 - LCD display
+
 
 **/
 
@@ -114,9 +118,16 @@ Ideas:
   then even more through serial
 - Or only four x four grid, with controller connected through serial? Makes it
   possible to make smaller blocks
+
 **/
 
 /**
 Questions:
 - How to handle running status for channel pressure and program change
+**/
+
+/**
+Facts:
+- time multiplexing of pots won't work if pot is > 5-10k. To circumvent this,
+  we need to add an external ADC.
 **/
