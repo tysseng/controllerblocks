@@ -14,6 +14,7 @@ void CMD_init(){
   // Init command handler
   unsigned short i;
   for(i=0; i< MATRIXROWS * MATRIXCOLS; i++){
+    delay_ms(50);
     midiChannelMap[i] = 0;
     midiStatusMap[i] = 0x90; //note on
     midiControllerMap[i] = 60 + i;
@@ -24,7 +25,7 @@ void CMD_init(){
  * value should be between 0 and 127
  */
 void CMD_generalEventDispatcher(char key, unsigned short value){
-
+  PORTB = key;
   MIDI_sendMidiMessage(
     midiChannelMap[key],
     midiStatusMap[key],

@@ -40,7 +40,8 @@ void interrupt() {
  **/
 void MCU_init(){
 
-  TRISC  = DATA_OUT;                 // PORTC is output
+  TRISC  = DATA_OUT;
+  TRISB  = DATA_OUT;
 
   //enable interrupts. NB: PEIE/GIE also affects timer0/1
   PEIE_bit = 1;  //TODO: Check if necessary
@@ -62,6 +63,7 @@ void main() {
   IO_init();
   MIDI_init();
 //  KBD_init();
+  KEYMAP_init(keymap);
   CMD_init();
   ANALOG_init();
   
@@ -114,11 +116,15 @@ Ideas:
   both rows and cols to the first block.
 - Enable mapping of key up-events to different message? What value to use?
 - Four x four grid only, but with built in serial? And posibility to use a cable 
-  to connect more? Can connect three matrices from one controller directly,
-  then even more through serial
+  to connect more? Can connect four matrices from one controller directly,
+  then even more through serial - 
+- One grid connects directly to the controller and three others through cable.
+- Controller-to-board cable contains 12 wires - power, serial rows and cols.
+- Or: Leave serial alone and use
 - Or only four x four grid, with controller connected through serial? Makes it
   possible to make smaller blocks
-
+- Anti-flood mode - minimum time between midi send to prevent flooding old
+  synths?
 **/
 
 /**

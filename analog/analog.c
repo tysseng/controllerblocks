@@ -60,12 +60,13 @@ void ANALOG_read(unsigned short row){
       ANALOG_triggerEvent(row, col, newValue);
     } //TODO: Special case for max value.
   }
-  delay_ms(10);
+  delay_ms(1);
 }
 
 void ANALOG_triggerEvent(unsigned short row, unsigned short col, unsigned int value){
   unsigned short analogMode = ANALOG_getMode(row, col);
   ANALOG_generateEvent(row, col, value);
+
   /*
   switch(analogMode){
     case ANALOG_MODE_BUTTON:
@@ -93,8 +94,8 @@ void ANALOG_generateKeyEvent( unsigned short row, unsigned short col, unsigned s
 }
 
 void ANALOG_generateEvent( unsigned short row, unsigned short col, unsigned int value) {
-
   unsigned short keyCode;
+
   keyCode = keymap[row*MATRIXCOLS+col]; //lookup ID of key pressed.
   CMD_generalEventDispatcher(keyCode, value >> 3); //NB: This only works as long as the value is 10 bit!
 }

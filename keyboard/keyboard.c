@@ -67,8 +67,6 @@ void KBD_init(){
   }
   currentState[SYSTEM_ROW] = 0xFF;
   previousState[SYSTEM_ROW] = 0xFF;
-
-  KEYMAP_init(keymap);
 }
 
 /**
