@@ -30,7 +30,7 @@ Count=0
 Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
-Count=10
+Count=12
 File0=ControllerBlocks.c
 File1=analog\analog.c
 File2=shared\definitions.h
@@ -41,6 +41,8 @@ File6=command_handler.c
 File7=keyboard\keyboard.h
 File8=keyboard\keyboard.c
 File9=shared\io.c
+File10=shared\global.h
+File11=midi\midi.c
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]

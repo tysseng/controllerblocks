@@ -65,6 +65,9 @@ void KBD_init(){
     currentState[row] = IO_readData();
     previousState[row] = currentState[row];
   }
+}
+
+void KBD_initSystemButtons(){
   currentState[SYSTEM_ROW] = 0xFF;
   previousState[SYSTEM_ROW] = 0xFF;
 }
@@ -80,6 +83,9 @@ void KBD_read(unsigned short row){
 
 /**
  * Read system specific keys (not part of the normal matrix, this may change later).
+ *
+ * NB: For this to work, PORTB must be pulled up near the port, and the buttons must
+ * pull the port to GND.
  **/
 void KBD_readSystemButtons(){
   KBD_triggerKeyEventsAndUpdateState(SYSTEM_ROW, IO_readSystemButtons());

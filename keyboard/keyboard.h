@@ -7,6 +7,7 @@
 extern unsigned short keymap[(MATRIXROWS +1) * MATRIXCOLS];
 
 void KBD_init();
+void KBD_initSystemButtons();
 void KBD_read(unsigned short row);
 void KBD_readSystemButtons();
 void KEYMAP_init(unsigned short keymap[]);

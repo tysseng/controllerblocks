@@ -25,22 +25,34 @@ void CMD_init(){
  * value should be between 0 and 127
  */
 void CMD_generalEventDispatcher(char key, unsigned short value){
-  PORTB = key;
-  MIDI_sendMidiMessage(
-    midiChannelMap[key],
-    midiStatusMap[key],
-    midiControllerMap[key],
-    value
-  );
+  if(GLOBAL_mode == MODE_LEARN){
+    if(MIDI_messageReady){
+      midiChannelMap[key] = MIDI_lastChannel;
+      midiStatusMap[key] = MIDI_lastStatus;
+      midiControllerMap[key] = MIDI_lastData1;
+      
+      MIDI_messageReady = 0;
+
+      SYSTEM_LED_LEARN = 0;
+      delay_ms(500);
+      SYSTEM_LED_LEARN = 1;
+    }
+  } else if(GLOBAL_mode == MODE_PLAY){
+    MIDI_sendMidiMessage(
+      midiChannelMap[key],
+      midiStatusMap[key],
+      midiControllerMap[key],
+      value
+    );
   
-  delay_ms(10);
-  MIDI_sendMidiMessage(
-    midiChannelMap[key],
-    midiStatusMap[key],
-    midiControllerMap[key],
-    0
-  );
-  
+    delay_ms(10);
+    MIDI_sendMidiMessage(
+      midiChannelMap[key],
+      midiStatusMap[key],
+      midiControllerMap[key],
+      0
+    );
+  }
 }
 
 void CMD_keyEventDispatcher(char key, unsigned short keydirection){

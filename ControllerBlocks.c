@@ -40,9 +40,6 @@ void interrupt() {
  **/
 void MCU_init(){
 
-  TRISC  = DATA_OUT;
-  TRISB  = DATA_OUT;
-
   //enable interrupts. NB: PEIE/GIE also affects timer0/1
   PEIE_bit = 1;  //TODO: Check if necessary
   GIE_bit = 1;   //TODO: Check if necessary
@@ -50,6 +47,9 @@ void MCU_init(){
 
   TRISE.F1 = DATA_OUT; //debug led
   PORTE.F1 = 0;
+  
+  TRISC = DATA_OUT;
+  PORTC = 0;
   
   SYSTEM_LED_LEARN_DIRECTION = DATA_OUT;
   SYSTEM_LED_LEARN = 0;
@@ -62,7 +62,7 @@ void main() {
   MCU_init();
   IO_init();
   MIDI_init();
-//  KBD_init();
+  KBD_initSystemButtons();
   KEYMAP_init(keymap);
   CMD_init();
   ANALOG_init();
@@ -71,13 +71,12 @@ void main() {
 
   row = 0;
   while(1){
-    /*
     if(row == 0){
       KBD_readSystemButtons();
-    }*/
-    //KBD_read(row);
+    }
     ANALOG_read(row);
     row = (row + 1) % MATRIXROWS;
+    PORTC.F2 = MIDI_messageReady;
   }
 }
 
@@ -103,7 +102,7 @@ The big todo/todecide:
 - support pitch bend? How?
 - support coarse/fine (14 bit) controllers?
 - LCD display
-
+- Reimplement buttons with default 0/pushed 1
 
 **/
 
@@ -125,6 +124,11 @@ Ideas:
   possible to make smaller blocks
 - Anti-flood mode - minimum time between midi send to prevent flooding old
   synths?
+- Multiplex rows and cols. Would require 1 analog input and 6 digital outputs to
+  read 8 x 8 grid, but requires an additional two chips, one 1-of-8 analog mux
+  and one 1-of-8 digital mux, freeing up 9 pins. OR: Use shift register instead
+  of digital mux, frees up an additional 1 pin making it possible to control
+  everything AND use reference voltages on port A.
 **/
 
 /**
