@@ -25,6 +25,8 @@ void CMD_init(){
  * value should be between 0 and 127
  */
 void CMD_generalEventDispatcher(char key, unsigned short value){
+
+  PORTC = value;
   if(GLOBAL_mode == MODE_LEARN){
     if(MIDI_messageReady){
       midiChannelMap[key] = MIDI_lastChannel;
@@ -38,6 +40,7 @@ void CMD_generalEventDispatcher(char key, unsigned short value){
       SYSTEM_LED_LEARN = 1;
     }
   } else if(GLOBAL_mode == MODE_PLAY){
+    PORTE.F1 = 1;
     MIDI_sendMidiMessage(
       midiChannelMap[key],
       midiStatusMap[key],
@@ -46,6 +49,7 @@ void CMD_generalEventDispatcher(char key, unsigned short value){
     );
   
     delay_ms(10);
+    PORTE.F1 = 0;
     MIDI_sendMidiMessage(
       midiChannelMap[key],
       midiStatusMap[key],

@@ -86,6 +86,33 @@ void KBD_read(unsigned short row){
  *
  * NB: For this to work, PORTB must be pulled up near the port, and the buttons must
  * pull the port to GND.
+ *
+ * Button RB0 turns on/off learn mode. PS: Remember to press AND HOLD a note if
+ * you want to map a note on, as a note off is sent when the key is released
+ * and that will be mapped instead.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  **/
 void KBD_readSystemButtons(){
   KBD_triggerKeyEventsAndUpdateState(SYSTEM_ROW, IO_readSystemButtons());

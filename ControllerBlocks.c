@@ -102,7 +102,7 @@ The big todo/todecide:
 - support pitch bend? How?
 - support coarse/fine (14 bit) controllers?
 - LCD display
-- Reimplement buttons with default 0/pushed 1
+- Better noise control on buttons.
 
 **/
 

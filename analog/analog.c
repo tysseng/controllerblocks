@@ -41,6 +41,7 @@ void ANALOG_read(unsigned short row){
   delay_us(200);
 
   for(col = 0; col < MATRIXCOLS; col++){
+
     newValue = IO_readAnalogData(col);
 
     currentValue = currentAnalogValues[row][col];
@@ -60,7 +61,6 @@ void ANALOG_read(unsigned short row){
       ANALOG_triggerEvent(row, col, newValue);
     } //TODO: Special case for max value.
   }
-  delay_ms(1);
 }
 
 void ANALOG_triggerEvent(unsigned short row, unsigned short col, unsigned int value){
